@@ -1,0 +1,47 @@
+﻿@page "/login"
+
+
+@inject HttpClient httpClient
+@inject IJSRuntime jsRuntime
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+<div class="row">
+    <div class="col-lg-4 offset-lg-4 pt-4 border">
+        <div class="mb-3 text-center">
+            <h3>LOGIN</h3>
+        </div>
+        <div class="mb-3">
+            <label>User Name</label>
+            <input @bind="@loginRequest.UserName" class="form-control" placeholder="user name" />
+        </div>
+        <div class="mb-3">
+            <label>Password</label>
+            <input @bind="@loginRequest.Password" type="password" class="form-control" placeholder="password" />
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <button @onclick="@Authenticate" class="btn btn-primary">Login</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginRequest loginRequest = new();
+    public async Task Authenticate()
+    {
+        var loginResponse = await httpClient.PostAsJsonAsync<LoginRequest>("/api/Account/Login", loginRequest);
+        if (loginResponse.IsSuccessStatusCode)
+        {
+            var userSession = await loginResponse.Content.ReadFromJsonAsync<UserSession>();
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(userSession);
+            navManager.NavigateTo("/", true);
+        }
+        else if (loginResponse.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "Invalid user name or password");
+            return;
+        }
+
+    }
+}
