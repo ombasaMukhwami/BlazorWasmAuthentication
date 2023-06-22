@@ -16,7 +16,8 @@ BlazorWasmAuthentication
 Contact me via email [mukhwami@gmail.com](mailto:mukhwami@gmail.com).
 
  ## technologies
-  - java
+  - C#
+  - ASP.NET/Blazor
   - Git 
 ## copyright and license information
 Copyright (c) {2023} **Ombasa Geoffrey Mukhwami**
